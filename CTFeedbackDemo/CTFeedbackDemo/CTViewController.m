@@ -15,27 +15,25 @@
 
 @implementation CTViewController
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)feedbackButtonTapped:(id)sender
-{
+- (IBAction)feedbackButtonTapped:(id)sender {
     CTFeedbackViewController *feedbackViewController = [CTFeedbackViewController controllerWithTopics:CTFeedbackViewController.defaultTopics localizedTopics:CTFeedbackViewController.defaultLocalizedTopics];
+    feedbackViewController.hidesScreenshotCell = YES;
+    feedbackViewController.useHTML = YES;
     feedbackViewController.toRecipients = @[@"ctfeedback@example.com"];
     [self.navigationController pushViewController:feedbackViewController animated:YES];
 }
 
-- (IBAction)modalFeedbackButtonTapped:(id)sender
-{
+- (IBAction)modalFeedbackButtonTapped:(id)sender {
     CTFeedbackViewController *feedbackViewController = [CTFeedbackViewController controllerWithTopics:CTFeedbackViewController.defaultTopics localizedTopics:CTFeedbackViewController.defaultLocalizedTopics];
     feedbackViewController.toRecipients = @[@"ctfeedback@example.com"];
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:feedbackViewController];

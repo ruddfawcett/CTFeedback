@@ -10,28 +10,23 @@
 
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 
-@implementation CTFeedbackCellItem
-{
+@implementation CTFeedbackCellItem {
 
 }
 
-+ (UITableViewCellStyle)cellStyle
-{
++ (UITableViewCellStyle)cellStyle {
     return UITableViewCellStyleDefault;
 }
 
-+ (NSString *)reuseIdentifier
-{
++ (NSString *)reuseIdentifier {
     return NSStringFromClass(self.class);
 }
 
-- (CGFloat)cellHeight
-{
+- (CGFloat)cellHeight {
     return 44.0;
 }
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
-{
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     [cell.contentView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
 
     cell.textLabel.text = nil;
@@ -45,13 +40,11 @@
 
 @implementation CTFeedbackTopicCellItem
 
-+ (UITableViewCellStyle)cellStyle
-{
++ (UITableViewCellStyle)cellStyle {
     return UITableViewCellStyleValue1;
 }
 
-- (id)init
-{
+- (id)init {
     self = [super init];
     if (self) {
         self.title = CTFBLocalizedString(@"Topic");
@@ -59,8 +52,7 @@
     return self;
 }
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
-{
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     [super configureCell:cell atIndexPath:indexPath];
 
     cell.textLabel.text = self.title;
@@ -74,8 +66,7 @@
 
 @implementation CTFeedbackContentCellItem
 
-- (id)init
-{
+- (id)init {
     self = [super init];
     if (self) {
         self.textView = [[UITextView alloc] initWithFrame:CGRectMake(5, 0, 310, ContentCellHeight)];
@@ -88,20 +79,17 @@
     return self;
 }
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
-{
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     [super configureCell:cell atIndexPath:indexPath];
 
     [cell.contentView addSubview:self.textView];
 }
 
-- (CGFloat)cellHeight
-{
+- (CGFloat)cellHeight {
     return MAX(ContentCellHeight, self.textView.contentSize.height);
 }
 
-- (void)textViewDidChange:(UITextView *)textView
-{
+- (void)textViewDidChange:(UITextView *)textView {
     [self willChangeValueForKey:@"cellHeight"];
 
     CGRect frame = self.textView.frame;
@@ -122,13 +110,11 @@
 
 @implementation CTFeedbackInfoCellItem
 
-+ (UITableViewCellStyle)cellStyle
-{
++ (UITableViewCellStyle)cellStyle {
     return UITableViewCellStyleValue1;
 }
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
-{
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     [super configureCell:cell atIndexPath:indexPath];
 
     cell.textLabel.text = self.title;
@@ -140,13 +126,11 @@
 
 @implementation CTFeedbackAdditionInfoCellItem
 
-+ (UITableViewCellStyle)cellStyle
-{
++ (UITableViewCellStyle)cellStyle {
     return UITableViewCellStyleValue1;
 }
 
-- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
-{
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath {
     [super configureCell:cell atIndexPath:indexPath];
 
     cell.imageView.image = self.screenImage;

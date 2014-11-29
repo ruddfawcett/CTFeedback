@@ -24,6 +24,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
 @interface CTFeedbackViewController ()<UIImagePickerControllerDelegate,UIActionSheetDelegate,UINavigationControllerDelegate>
 
 @property (nonatomic, readonly) NSUInteger selectedTopicIndex;
+@property (nonatomic) NSUInteger sectionHeader;
 
 @property (nonatomic, strong) NSArray *cellItems;
 
@@ -47,13 +48,11 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     self.navigationController.navigationBarHidden = self.previousNavigationBarHiddenState;
 }
 
-+ (CTFeedbackViewController *)controllerWithTopics:(NSArray *)topics localizedTopics:(NSArray *)localizedTopics
-{
++ (CTFeedbackViewController *)controllerWithTopics:(NSArray *)topics localizedTopics:(NSArray *)localizedTopics {
     return [[CTFeedbackViewController alloc] initWithTopics:topics localizedTopics:localizedTopics];
 }
 
-+ (NSArray *)defaultTopics
-{
++ (NSArray *)defaultTopics {
     return @[
             @"Question",
             @"Request",
@@ -62,8 +61,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     ];
 }
 
-+ (NSArray *)defaultLocalizedTopics
-{
++ (NSArray *)defaultLocalizedTopics {
     return @[
             CTFBLocalizedString(@"Question"),
             CTFBLocalizedString(@"Request"),
@@ -72,8 +70,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     ];
 }
 
-- (instancetype)initWithTopics:(NSArray *)topics localizedTopics:(NSArray *)localizedTopics
-{
+- (instancetype)initWithTopics:(NSArray *)topics localizedTopics:(NSArray *)localizedTopics {
     self = [super initWithStyle:UITableViewStyleGrouped];
     if (self) {
         self.topics = topics;
@@ -83,8 +80,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     return self;
 }
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
 
     self.title = CTFBLocalizedString(@"Feedback");
@@ -94,7 +90,14 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     [self.tableView registerClass:[CTFeedbackCell class] forCellReuseIdentifier:[CTFeedbackInfoCellItem reuseIdentifier]];
     [self.tableView registerClass:[CTFeedbackCell class] forCellReuseIdentifier:[CTFeedbackAdditionInfoCellItem reuseIdentifier]];
 
-    self.cellItems = @[self.inputCellItems, self.additionCellItems ,self.deviceInfoCellItems, self.appInfoCellItems];
+    NSMutableArray *items = [@[] mutableCopy];
+    [items addObjectsFromArray:@[self.inputCellItems, self.deviceInfoCellItems, self.appInfoCellItems]];
+    
+    if (!self.hidesScreenshotCell) {
+        [items insertObject:self.additionCellItems atIndex:1];
+    }
+    
+    self.cellItems = items.copy;
 
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:CTFBLocalizedString(@"Mail") style:UIBarButtonItemStylePlain target:self action:@selector(sendButtonTapped:)];
 }
@@ -112,22 +115,19 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     }
 }
 
-- (void)didReceiveMemoryWarning
-{
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self.contentCellItem removeObserver:self forKeyPath:@"cellHeight"];
 }
 
 #pragma mark - Key value observing
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change
-                       context:(void *)context
-{
+                       context:(void *)context {
     if ([keyPath isEqualToString:@"cellHeight"]) {
         [self.tableView beginUpdates];
         [self.tableView endUpdates];
@@ -136,8 +136,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
 
 #pragma mark -
 
-- (void)cancelButtonTapped:(id)sender
-{
+- (void)cancelButtonTapped:(id)sender {
     if(self.navigationController != nil){
         if( [self.navigationController viewControllers][0] == self){
             // Can't pop, just dismiss
@@ -151,20 +150,17 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     }
 }
 
-- (void)setTopics:(NSArray *)topics
-{
+- (void)setTopics:(NSArray *)topics {
     _topics = topics;
 
     self.selectedTopic = _topics.count >= 1 ? _topics[0] : @"";
 }
 
-- (NSUInteger)selectedTopicIndex
-{
+- (NSUInteger)selectedTopicIndex {
     return [self.topics indexOfObject:self.selectedTopic];
 }
 
-- (NSArray *)inputCellItems
-{
+- (NSArray *)inputCellItems {
     NSMutableArray *result = [NSMutableArray array];
 
     __weak CTFeedbackViewController *weakSelf = self;
@@ -194,7 +190,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     return result.copy;
 }
 
-- (NSArray *)additionCellItems{
+- (NSArray *)additionCellItems {
     NSMutableArray *result = [NSMutableArray array];
 
 	__weak CTFeedbackViewController *weakSelf = self;
@@ -215,8 +211,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     return [result copy];
 }
 
-- (NSArray *)deviceInfoCellItems
-{
+- (NSArray *)deviceInfoCellItems {
     NSMutableArray *result = [NSMutableArray array];
 
     CTFeedbackInfoCellItem *platformItem = [CTFeedbackInfoCellItem new];
@@ -232,8 +227,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     return result.copy;
 }
 
-- (NSArray *)appInfoCellItems
-{
+- (NSArray *)appInfoCellItems {
     NSMutableArray *result = [NSMutableArray array];
 
     if (!self.hidesAppNameCell) {
@@ -260,8 +254,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     return result.copy;
 }
 
-- (NSString *)platform
-{
+- (NSString *)platform {
     int mib[2];
     size_t len;
     char *machine;
@@ -277,8 +270,7 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     return platform;
 }
 
-- (NSString *)platformString
-{
+- (NSString *)platformString {
     NSString *platform = [self platform];
     
     // Reading a file with platform names
@@ -293,45 +285,40 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     return platform;
 }
 
-- (NSString *)systemVersion
-{
+- (NSString *)systemVersion {
     return [UIDevice currentDevice].systemVersion;
 }
 
-- (NSString *)appName
-{
+- (NSString *)appName {
     return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
 }
 
-- (NSString *)appVersion
-{
+- (NSString *)appVersion {
     return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
 }
 
-- (NSString *)appBuild
-{
+- (NSString *)appBuild {
     return [[NSBundle mainBundle] objectForInfoDictionaryKey:(NSString *)kCFBundleVersionKey];
 }
 
-- (NSString *)mailSubject
-{
+- (NSString *)mailSubject {
     return [NSString stringWithFormat:@"%@: %@", self.appName, self.topics[self.selectedTopicIndex]];
 }
 
-- (NSString *)mailBody
-{
+- (NSString *)mailBody {
     NSString *content = self.contentCellItem.textView.text;
     NSString *body;
     
     if (self.useHTML) {
         body = [NSString stringWithFormat:@"<style>td {padding-right: 20px}</style>\
                 <p>%@</p><br />\
+                <hr />\
                 <table cellspacing=0 cellpadding=0>\
-                <tr><td>Device:</td><td><b>%@</b></td></tr>\
-                <tr><td>iOS:</td><td><b>%@</b></td></tr>\
-                <tr><td>App:</td><td><b>%@</b></td></tr>\
-                <tr><td>Version:</td><td><b>%@</b></td></tr>\
-                <tr><td>Build:</td><td><b>%@</b></td></tr>\
+                <tr><td><b>Device:</b></td><td>%@</td></tr>\
+                <tr><td><b>iOS:</b></td><td>%@</td></tr>\
+                <tr><td><b>App Name:</b></td><td>%@</td></tr>\
+                <tr><td><b>App Version:</b></td><td>%@</td></tr>\
+                <tr><td><b>App Build:</b></td><td>%@</td></tr>\
                 </table>",
                 [content stringByReplacingOccurrencesOfString:@"\n" withString:@"<br />"],
                 self.platformString,
@@ -365,8 +352,7 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
 }
 
 #pragma mark - send email
-- (void)sendButtonTapped:(id)sender
-{
+- (void)sendButtonTapped:(id)sender {
     if ([MFMailComposeViewController canSendMail]) {
         MFMailComposeViewController *controller = [[MFMailComposeViewController alloc] init];
         controller.mailComposeDelegate = self;
@@ -392,19 +378,16 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
 
 #pragma mark - Table view data source
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
 //    return 3;
     return [self.cellItems count];
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return [self.cellItems[(NSUInteger)section] count];
 }
 
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CTFeedbackCellItem *cellItem = self.cellItems[(NSUInteger)indexPath.section][(NSUInteger)indexPath.row];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[[cellItem class] reuseIdentifier] forIndexPath:indexPath];
 
@@ -413,11 +396,17 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
     return cell;
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
-{
-    switch (section) {
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    if (!self.hidesScreenshotCell) {
+        self.sectionHeader = section;
+    }
+    else {
+        self.sectionHeader = section >= CTFeedbackSectionScreenshot ? section+1 : section;
+    }
+    
+    switch (self.sectionHeader) {
         case CTFeedbackSectionInput:
-            return nil;
+            return CTFBLocalizedString(@"General Info");
         case CTFeedbackSectionScreenshot:
             return CTFBLocalizedString(@"Additional Info");
         case CTFeedbackSectionDeviceInfo:
@@ -431,14 +420,12 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
 
 #pragma mark - Table view delegate
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     CTFeedbackCellItem *cellItem = self.cellItems[(NSUInteger)indexPath.section][(NSUInteger)indexPath.row];
     return cellItem.cellHeight;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     CTFeedbackCellItem *cellItem = self.cellItems[(NSUInteger)indexPath.section][(NSUInteger)indexPath.row];
     if (cellItem.action) cellItem.action(self);
 
@@ -447,16 +434,14 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
 
 #pragma mark - Scroll view delegate
 
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     [self.contentCellItem.textView resignFirstResponder];
 }
 
 #pragma mark - MFMailComposeViewController delegate
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result
-                        error:(NSError *)error
-{
+                        error:(NSError *)error {
     void (^completion)(void) = ^{
         if (self.presentingViewController.presentedViewController) {
             [self dismissViewControllerAnimated:YES completion:nil];

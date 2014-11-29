@@ -22,9 +22,11 @@
 
 "Build" = "Build";
 
-"Device Info" = "Device Info";
+"General Info" = "General Information";
 
-"App Info" = "App Info";
+"Device Info" = "Device Information";
+
+"App Info" = "App Information";
 
 "Feedback" = "Feedback";
 

@@ -7,8 +7,7 @@
 
 @implementation NSBundle (CTFeedback)
 
-+ (NSBundle *)feedbackBundle
-{
++ (NSBundle *)feedbackBundle {
     static NSBundle *bundle = nil;
     static dispatch_once_t predicate;
 
