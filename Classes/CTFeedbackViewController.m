@@ -90,6 +90,8 @@ typedef NS_ENUM(NSInteger, CTFeedbackSection){
     [self.tableView registerClass:[CTFeedbackCell class] forCellReuseIdentifier:[CTFeedbackInfoCellItem reuseIdentifier]];
     [self.tableView registerClass:[CTFeedbackCell class] forCellReuseIdentifier:[CTFeedbackAdditionInfoCellItem reuseIdentifier]];
 
+    self.tableView.showsVerticalScrollIndicator = NO;
+    
     NSMutableArray *items = [@[] mutableCopy];
     [items addObjectsFromArray:@[self.inputCellItems, self.deviceInfoCellItems, self.appInfoCellItems]];
     
