@@ -367,7 +367,11 @@ static NSString * const ATTACHMENT_FILENAME = @"screenshot.jpg";
         if (self.mailAttachment && [self.mailAttachment length]>0) {
             [controller addAttachmentData:self.mailAttachment mimeType:MIME_TYPE_JPEG fileName:ATTACHMENT_FILENAME];
         }
-        [self presentViewController:controller animated:YES completion:nil];
+        
+        controller.navigationBar.tintColor = [UIColor whiteColor];
+        [self presentViewController:controller animated:YES completion:^{
+            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+        }];
     }else{
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:CTFBLocalizedString(@"Error")
                                                         message:CTFBLocalizedString(@"Mail no configuration")
